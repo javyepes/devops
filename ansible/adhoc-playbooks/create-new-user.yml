@@ -1,0 +1,18 @@
+---
+- name: Create New User Playbook
+  hosts: ENTER_HOSTNAME_OR_IP_OR_GROUP
+  user: ENTER_PRIVILEDGED_USER
+  sudo: yes
+  vars:
+    new_user: ENTER_USERNAME
+###how to created a pwd hash: python -c "from passlib.hash import sha512_crypt; import getpass; print sha512_crypt.encrypt(getpass.getpass())" ### install passlib:  pip install passlib
+    user_pp: ENTER_PWD_HASH
+  tasks:
+    - name: create new user
+      user: name={{ new_user }} password={{user_pp}} group=dmgdev state=present
+      register: create_users
+
+    - name: force user to change pwd on 1st log in
+      shell: chage -d 0 {{ new_user }}
+      when: create_users.changed
+
