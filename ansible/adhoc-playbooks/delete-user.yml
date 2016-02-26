@@ -1,0 +1,24 @@
+- name: Delete User Playbook
+  hosts: ''
+  user: ''
+  sudo: yes
+  vars_prompt:
+    - name: "username"
+      prompt: "enter_your_username"
+      private: no
+  tasks:
+    - name: delete new user
+      user: name={{ username }} state=absent
+      register: delete_users
+### we are either going to delete the homedir or archive it
+#    - name: check if the home dir exists
+#      stat: path=/home/{{ username }}
+#      register: homedir_check
+#Delete
+#    - name: delete home directory
+#      file: path=/home/{{ username }} state=absent
+#      when: homedir_check.stat.exists == true
+#Move
+#    - name: move homedir to /home/archives
+#      shell: mv /home/(( username }} /home/archives
+#      when: homedir_check.stat.exists == true
