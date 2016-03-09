@@ -1,0 +1,12 @@
+- name: Copy Public SSH Key
+  hosts: ''
+  user: ''
+  become: yes
+  vars:
+    username: ''
+  tasks:
+    - name: copy public key
+      authorized_key: user={{ username }} key="{{ lookup('file', '/home/{{ username }}/.ssh/id_rsa.pub') }}"
+#      authorized_key: user={{ username }} deploy key={{ item }}
+#      with_file:
+#        - public_keys/doe-jane

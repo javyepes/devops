@@ -1,0 +1,24 @@
+- name: New User Playbook
+  hosts: 
+  user: 
+  become: yes
+  vars:
+    group: ''
+  vars_prompt:
+    - name: new_user
+      prompt: enter_your_username
+      private: no
+    - name: "user_pp"
+      prompt: "enter_your_password"
+      private: yes
+      encrypt: "md5_crypt"
+      confirm: yes
+      salt_size: 6
+  tasks:
+    - name: create new user
+      user: name={{ new_user }} password={{user_pp}} group={{ group }} state=present shell=/bin/bash home=/home/{{ new_user }} generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa
+      register: create_users
+
+    - name: force user to change pwd on 1st log in
+      shell: chage -d 0 {{ new_user }}
+      when: create_users.changed

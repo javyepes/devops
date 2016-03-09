@@ -1,0 +1,11 @@
+- name: Copy Public SSH Key
+  hosts: ''
+  user: ''
+  become: yes
+  vars_prompt:
+    - name: username
+      prompt: enter_your_username
+      private: no
+  tasks:
+    - name: copy public key
+      authorized_key: user=(( username }} key="{{ lookup('file', '/home/(( username }}/.ssh/id_rsa.pub') }}"
