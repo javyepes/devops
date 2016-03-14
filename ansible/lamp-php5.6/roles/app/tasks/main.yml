@@ -1,0 +1,90 @@
+---
+- name: add php5.6 repo
+  apt_repository: repo='ppa:ondrej/php5-5.6' state=present
+  tags: ['app', 'php']
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: install php
+  apt: name={{ item }} state=present update_cache=yes cache_valid_time=360
+  with_items:
+    - php5
+    - php-pear
+    - php5-dev
+    - php-apc
+    - php5-mysql
+    - php5-gmp
+    - php5-memcached
+    - memcached
+    - php5-xdebug
+    - php5-pgsql
+    - php5-xmlrpc
+    - php-soap
+    - php5-curl
+    - libcurl4-gnutls-dev
+    - libxml2
+    - libxml2-dev
+    - libncursesw5-dev
+    - libssh2-1-dev
+    - libssh2-php
+    - libgmp3-dev
+    - libpcre3-dev
+  tags: ['app', 'php']
+  notify:
+  - reload apache2 service
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- include: hold-software-packages.yml
+  tags: ['app', 'php', 'patching']
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: check if solr is installed
+  stat: path=/usr/lib/php5/20131226/solr.so
+  register: solr_check
+  tags: ['app', 'pecl', 'solr']
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: pecl install solr
+  shell: echo '' |pecl install solr
+  tags: ['app', 'pecl', 'solr']
+  notify:
+  - reload apache2 service
+  when: (ansible_distribution == 'Debian' and solr_check.stat.exists == false) or (ansible_distribution == 'Ubuntu' and solr_check.stat.exists == false)
+
+# the pear module hangs for now if you need pecl to install packages use the shell module
+- name: check if ncurses is installed
+  stat: path=/usr/lib/php5/20131226/ncurses.so
+  register: ncurses_check
+  tags: ['app', 'pecl', 'ncurses']
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+- name: pecl install ncurses
+  shell: echo '' |pecl install ncurses
+  tags: ['app', 'pecl', 'ncurses']
+  notify:
+  - reload apache2 service
+  when: (ansible_distribution == 'Debian' and ncurses_check.stat.exists == false) or (ansible_distribution == 'Ubuntu' and ncurses_check.stat.exists == false)
+
+- name: Modify PHP5
+  apache2_module: name=php5 state=present
+  tags: ['app', 'php']
+  notify:
+  - reload apache2 service
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Modify rewrite
+  apache2_module: name=rewrite state=present
+  tags: ['app', 'php']
+  notify:
+  - reload apache2 service
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Modify SSL
+  apache2_module: name=ssl state=present
+  tags: ['app', 'php']
+  notify:
+  - reload apache2 service
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: copy php.ini templates
+  template: src=../templates/php.ini dest=/etc/php5/apache2/php.ini
+  tags: ['app', 'php']
+  notify:
+  - reload apache2 service
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

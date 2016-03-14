@@ -1,0 +1,29 @@
+---
+# Install common software
+- name: Install and Configure Common Software
+  hosts: all
+  remote_user: root
+  become: yes
+  roles:
+    - common
+# Install webserver software: apache or nginx
+- name: Install Web Server
+  hosts: web
+  remote_user: root
+  become: yes
+  roles:
+    - web
+# Install App Software: php, java, etc.
+- name: Install App
+  hosts: app
+  remote_user: root
+  become: yes
+  roles:
+    - app
+# Install database software: mysql, mysql-proxy, or mongoDB ###
+- name: Install DataBase
+  hosts: db
+  remote_user: root
+  become: yes
+  roles:
+    - db

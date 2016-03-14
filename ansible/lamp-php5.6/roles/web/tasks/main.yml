@@ -1,0 +1,28 @@
+---
+- name: Disable Ubuntu firewall
+  ufw: state=disabled
+  tags: web
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: install apache2
+  apt: name={{ item }} state=present update_cache=yes cache_valid_time=360
+  with_items:
+    - apache2
+  notify:
+  - start web server service
+  tags: web
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: "ubuntu: put a hold on packages"
+  dpkg_selections: name={{ item }} selection=hold
+  with_items:
+    - apache2
+    - apache2-bin
+    - apache2-data
+    - apache2-utils
+    - libaprutil1-dbd-sqlite3
+    - libaprutil1-ldap
+    - liblua5.1-0
+    - ssl-cert
+  tags: ['web', 'patching']
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

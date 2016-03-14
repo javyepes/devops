@@ -1,0 +1,30 @@
+---
+- name: "ubuntu: put a hold on packages"
+  dpkg_selections: name={{ item }} selection=hold
+  with_items:
+    - libapache2-mod-php5
+    - libcurl4-gnutls-dev
+    - libxml2
+    - libxml2-dev
+    - libncursesw5-dev
+    - libssh2-1-dev
+    - libssh2-php
+    - libgmp3-dev
+    - libpcre3-dev
+    - php5
+    - php-pear
+    - php5-dev
+    - php-apc
+    - php5-mysql
+    - php5-gmp
+    - php5-apcu
+    - php5-mysql
+    - php5-memcached
+    - memcached
+    - php5-xdebug
+    - php5-pgsql
+    - php5-xmlrpc
+    - php-soap
+    - php5-curl
+  tags: ['app', 'php', 'patching']
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

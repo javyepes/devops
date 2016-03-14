@@ -1,0 +1,24 @@
+---
+- name: Change timezone to EST
+# choose the timezone
+  file: src=/usr/share/zoneinfo/EST dest=/etc/localtime state=link force=yes
+  tags: common
+
+- name: install common packages
+  apt: name={{ item }} state=present update_cache=yes cache_valid_time=360
+  with_items:
+# enter the name of the packages that admin use on this server
+    - build-essential
+    - curl
+    - fail2ban
+    - git
+    - make
+    - netcat
+    - rubygems
+    - subversion
+    - sysstat
+    - rubygems
+    - telnet
+    - vim
+  tags: common
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'

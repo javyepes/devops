@@ -1,0 +1,37 @@
+---
+- name: install mysql-proxy
+  apt: name=mysql-proxy state=present
+  notify:
+  - start mysql-proxy service
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+  tags: mysql
+
+- name: copy mysql-proxy templates to /etc/mysql/mysql-proxy.cnf
+  template: src=../templates/mysql-proxy dest=/etc/default/mysql-proxy
+  tags: mysql
+
+- name: check for /etc/mysql
+  stat: path=/etc/mysql
+  register: etc_mysql
+  tags: mysql
+- name: create /etc/mysql folder
+  file: path=/etc/mysql state=directory owner=root group=root mode=0775 recurse=yes
+  when: etc_mysql.stat.exists == false
+  tags: mysql
+
+- name: check for mysql-proxy.cnf
+  stat: path=/etc/mysql/mysql-proxy.cnf
+  register: mysqlproxy_cnf
+  tags: mysql
+- name: create /etc/mysql/mysql-proxy.cnf file
+  file: path=/etc/mysql/mysql-proxy.cnf state=touch owner=root group=root mode=0660 
+  when: mysqlproxy_cnf.stat.exists == false
+  tags: mysql
+
+- name: copy mysql-proxy.cnf to /etc/mysql/mysql-proxy.cnf
+  template: src=../templates/mysql-proxy.cnf dest=/etc/mysql/mysql-proxy.cnf
+  tags: mysql
+
+- name: start mysql-proxy service
+  service: name=mysql-proxy state=started
+  tags: mysql

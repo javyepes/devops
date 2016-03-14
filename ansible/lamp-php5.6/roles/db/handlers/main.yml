@@ -1,0 +1,12 @@
+---
+- name: start mysql-proxy service
+  service: name=mysql-proxy state=started
+
+- name: restart mysql-proxy service
+  service: name=mysql-proxy state=restarted
+
+- name: reload mysql-proxy service
+  service: name=mysql-proxy state=reloaded
+
+- name: stop mysql-proxy service
+  service: name=mysql-proxy state=stopped
