@@ -1,0 +1,15 @@
+---
+- name: Change timezone to EST
+  file: src=/usr/share/zoneinfo/EST dest=/etc/localtime state=link force=yes
+
+- name: install common packages
+  yum: name={{ item }} state=present
+  with_items:
+    - curl
+    - git
+    - make
+    - nc
+    - screen
+    - subversion
+    - telnet
+    - unzip

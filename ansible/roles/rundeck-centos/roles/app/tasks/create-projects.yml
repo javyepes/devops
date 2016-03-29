@@ -1,0 +1,45 @@
+---
+# These tasks only work of the templates exist.  We are create the project folders, then copying the templates, and restart rundeck if any of the tasks have 'changed' as the return code
+- name: create project folders
+  file: path=/var/rundeck/projects/{{ item }}/etc  state=directory recurse=yes
+  with_items:
+# use what ever project names you like
+    - production
+    - staging
+    - qa
+    - scheduler # I used rundeck as a scheduler to replace cron, UC4, etc.
+  notify:
+    - restart rundeckd service
+
+# I like to use templates I created to configure the projects. I am 
+- name: copy staging config
+  template: src=../templates/staging/{{ item }} dest=/var/rundeck/projects/staging/etc/{{ item }}
+  with_items:
+    - project.properties
+    - resources.xml
+  notify:
+    - restart rundeckd service
+
+- name: copy production config
+  template: src=../templates/production/{{ item }} dest=/var/rundeck/projects/production/etc/{{ item }}
+  with_items:
+    - project.properties
+    - resources.xml
+  notify:
+    - restart rundeckd service
+
+- name: copy qa configs
+  template: src=../templates/qa/{{ item }} dest=/var/rundeck/projects/qa/etc/{{ item }}
+  with_items:
+    - project.properties
+    - resources.xml
+  notify:
+    - restart rundeckd service
+
+- name: copy scheduler configs
+  template: src=../templates/scheduler/{{ item }} dest=/var/rundeck/projects/scheduler/etc/{{ item }}
+  with_items:
+    - project.properties
+    - resources.xml
+  notify:
+    - restart rundeckd service

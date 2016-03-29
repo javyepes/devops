@@ -1,0 +1,15 @@
+---
+# I like to use templates of the files below
+- name: copy templates to /etc/rundeck/
+  template: src=../templates/{{ item }} dest=/etc/rundeck/{{ item }}
+  with_items:
+    - admin.aclpolicy
+    - developer.aclpolicy
+    - devlead.aclpolicy
+    - framework.properties
+    - profile
+    - project.properties
+    - rundeck-config.properties
+    - realm.properties
+  notify:
+    - restart rundeckd service

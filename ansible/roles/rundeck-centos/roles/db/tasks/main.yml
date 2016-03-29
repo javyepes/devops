@@ -1,0 +1,23 @@
+---
+- name: check for repo
+  stat: path=/etc/yum.repos.d/mysql-community.repo
+  register: mysql_repo
+
+- name: add yum repos
+  shell: rpm -Uvh http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm
+  when: mysql_repo.stat.exists == false
+
+- name: install mysql
+  yum: name={{ item }} state=present
+  with_items:
+    - mysql-server
+    - MySQL-python
+
+- name: start db service
+  service: name=mysqld state=started
+
+- name: create rundeck database
+  mysql_db: state=present name=rundeck
+
+- name: create rundeck db user
+  mysql_user: name=rundeckuser password=rundeckpassword priv=*.*:ALL,GRANT state=present

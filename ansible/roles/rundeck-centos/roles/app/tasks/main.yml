@@ -1,0 +1,23 @@
+---
+- name: install java
+  yum: name=java-1.7.0 state=present
+
+- name: check for /etc/yum.repos.d/rundeck.repo
+  stat: path=/etc/yum.repos.d/rundeck.repo
+  register: rundeck_repo
+
+- name: download rundeck rpm
+  shell: rpm -Uvh http://repo.rundeck.org/latest.rpm
+  when: rundeck_repo.stat.exists == false
+
+- name: install rundeck
+  yum: name=rundeck state=present
+  notify:
+  - start rundeckd service
+
+# uncomment the includes below if you have templates created
+### copying the config files that live in /etc/rundeck
+#- include: etc-rundeck.yml
+
+### create projects
+#- include: create-projects.yml

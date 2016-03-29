@@ -1,0 +1,12 @@
+---
+- name: start db service
+  service: name=mysqld state=started
+
+- name: restart db service
+  service: name=mysqld state=restarted
+
+- name: reload db service
+  service: name=mysqld state=reloaded
+
+- name: stop db service
+  service: name=mysqld state=stopped

@@ -1,0 +1,21 @@
+---
+- name: configure and install common packages
+  hosts: rundeck_all
+  remote_user: root
+  sudo: yes
+  roles:
+    - common
+# app
+- name: configure and app common packages
+  hosts: rundeck_all
+  remote_user: root
+  sudo: yes
+  roles:
+    - app
+# db
+- name: configure and db common packages
+  hosts: rundeck_all
+  remote_user: root
+  sudo: yes
+  roles:
+    - db

@@ -1,0 +1,9 @@
+---
+- name: start rundeckd service
+  service: name=rundeckd state=started
+
+- name: restart rundeckd service
+  service: name=rundeckd state=restarted
+
+- name: stop rundeckd service
+  service: name=rundeckd state=stopped
