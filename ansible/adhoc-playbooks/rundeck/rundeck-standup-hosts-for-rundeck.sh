@@ -1,5 +1,5 @@
 ---
-# This a playbook that can be ran adhoc or bootstrapped for your build server scripts.  The playbook, creates the rundeck user, group, gives sudo access, copies the ssh public key, creates the temp folder, and simulate the 1st ssh session
+# This a playbook that can be ran adhoc or bootstrapped for your build server scripts.  The playbook creates the rundeck user,rd group(or whatevery admin group you want to create), gives sudo access to the group, copies the ssh public key, creates the temp folder, and simulate the 1st ssh session
 - name: Create Rundeck User
   hosts: # enter you host group
   user: # enter your user
