@@ -1,0 +1,30 @@
+---
+# centos install steps
+- name: "Centos: install auto-updater rpm"
+  yum: name=http://agentrepo.drivesrvr.com/redhat/cloudbackup-updater-latest.rpm state=present
+  register: app_install
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  tags: ['centos', 'backups']
+
+- wait_for: path=/usr/local/bin/driveclient
+  tags: ['centos', 'backups']
+
+- name: check of /etc/driveclient/bootstrap.json exist
+  stat: path=/etc/driveclient/bootstrap.json
+  register: bootstrap_check
+  when: app_install.changed
+  tags: ['centos', 'backups']
+- name: delete /etc/driveclient/bootstrap.json if its a new install or update
+  file: path=/etc/driveclient/bootstrap.json state=absent
+#  shell: rm -rf /etc/driveclient/bootstrap.json
+  when: bootstrap_check.stat.exists == true
+  tags: ['centos', 'backups']
+
+- name:  "Centos: configure the agent"
+  shell: echo "yes" | sudo /usr/local/bin/driveclient --configure --username {{ rs_user }} --apikey {{ rs_api_key }} creates=/etc/driveclient/bootstrap.json
+  when: app_install.changed
+  tags: ['centos', 'backups']
+
+- name: start backup agent service
+  service: name=driveclient state=started
+  tags: ['centos', 'backups']

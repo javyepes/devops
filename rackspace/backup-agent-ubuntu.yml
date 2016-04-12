@@ -1,0 +1,34 @@
+---
+# ubuntu install tasks
+- name: "Ubuntu: install python-apt"
+  apt: name=python-apt state=present update_cache=yes cache_valid_time=360
+  tags: ['ubuntu', 'backups']
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: "Ubuntu: check for cloudbackup-updater-latest.deb at /tmp"
+  stat: path=/tmp/cloudbackup-updater-latest.deb
+  register: deb_check
+  tags: ['ubuntu', 'backups']
+- name: "Ubuntu: wget autoupdater"
+  get_url: url='http://agentrepo.drivesrvr.com/debian/cloudbackup-updater-latest.deb' dest=/tmp/cloudbackup-updater-latest.deb
+  when: deb_check.stat.exists == false
+  tags: ['ubuntu', 'backups']
+- name: "Ubuntu: install autoupdater"
+  apt: deb=/tmp/cloudbackup-updater-latest.deb state=present
+  register: app_install
+  tags: ['ubuntu', 'backups']
+- name: "Ubuntu: build dependicies for cloudbackup-updater-latest-deb"
+  shell: sudo apt-get install -f
+  when: app_install.changed
+  tags: ['ubuntu', 'backups']
+
+- wait_for: path=/usr/local/bin/driveclient
+  tags: ['ubuntu', 'backups']
+- name: "Ubuntu: configure the agent"
+  shell: echo "yes" | sudo /usr/local/bin/driveclient --configure --username {{ rs_user }} --apikey {{ rs_api_key }} creates=/etc/driveclient/bootstrap.json
+  tags: ['ubuntu', 'backups']
+  when: app_install.changed
+
+- name: start backup agent service
+  service: name=driveclient state=started
+  tags: ['ubuntu', 'backups']
