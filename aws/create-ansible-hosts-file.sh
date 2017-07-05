@@ -1,6 +1,6 @@
 #!/bin/bash
-tmphf="/tmp/tmp-hosts"
-hfile="/Users/jyepes/Documents/ansible/hosts"
+tmphf="INSERT TMP FILENAME"
+hfile="INSERT ANSIBLE HOSTS FILENAME"
 
 touch $tmphf
 echo "[prod]" > $tmphf
