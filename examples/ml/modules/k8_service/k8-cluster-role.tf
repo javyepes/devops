@@ -2,10 +2,10 @@ resource "kubernetes_cluster_role" "local" {
   provider = kubernetes.local
 
   metadata {
-    name = var.k8_cluster_role_metadata_name
+    name = var.app_name
 
     labels = {
-      app = var.k8_cluster_role_metadata_labels_app
+      app = var.app_name
     }
   }
 
